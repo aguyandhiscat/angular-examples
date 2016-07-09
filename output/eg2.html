@@ -14,17 +14,16 @@
     <title>angular-example-2</title>
 
     <style>
-        .ball-cage {
+        .square-cage {
             position: relative;
         }
 
-        .ball {
+        .square {
             position: absolute;
             top: 0;
             left: 0;
             width: 5px;
             height: 5px;
-            border-radius: 5px;
             background-color: red;
         }
     </style>
@@ -40,16 +39,16 @@
         <span>&raquo;</span>
 
         <button ng-click="my_page.draw()"
-                ng-disabled="my_page.can_draw !== true">Send Draw Command
+                ng-disabled="my_page.can_draw === false">Send Draw Command
         </button>
     </div>
 
-    <div class="ball-cage">
+    <div class="square-cage">
 
-        <div ng-repeat="ball in my_page.balls track by $index">
+        <div ng-repeat="obj in my_page.squares track by $index">
 
-            <div class="ball"
-                 my-ball="ball"></div>
+            <div class="square"
+                 my-square="obj"></div>
 
         </div>
 
@@ -70,6 +69,8 @@
                 var LEFTMAX = 400;
                 var TOPMAX = 400;
 
+                this.can_draw = false;
+
                 /**
                  * Expose functionality.
                  */
@@ -79,10 +80,10 @@
                 // -- Functions -- //
 
                 function populate() {
-                    this.balls = [];
+                    this.squares = [];
 
                     for (var i = 0, ii = 50; i < ii; i++) {
-                        this.balls.push({
+                        this.squares.push({
                             "top": Math.floor(Math.random() * LEFTMAX),
                             "left": Math.floor(Math.random() * TOPMAX)
                         });
@@ -96,7 +97,7 @@
                 }
             }]);
 
-        app.directive("myBall", ["$parse",
+        app.directive("mySquare", ["$parse",
             function ($parse) {
                 return {
                     "link": link,
@@ -106,11 +107,11 @@
                 function link(scope, element, attrs) {
 
                     scope.$on("BeginDrawing", function () {
-                        var ball_data = $parse(attrs["myBall"])(scope);
+                        var square_data = $parse(attrs["mySquare"])(scope);
 
                         element.css({
-                            "top": ball_data.top + "px",
-                            "left": ball_data.left + "px"
+                            "top": square_data.top + "px",
+                            "left": square_data.left + "px"
                         });
                     });
 

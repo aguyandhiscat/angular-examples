@@ -19,8 +19,8 @@
     Begin Application
                   ------>
 <div class="container"
-     ng-controller="page.ctrl">
-    
+     ng-controller="PageCtrl">
+
     <!------
         Navigation
                ------>
@@ -60,7 +60,7 @@
             </div>
 
             <div>
-                Valid: {{ { false: "f", true: "t"}[my_form.my_date.$valid] }}
+                Valid: {{ {false: "f", true: "t"}[my_form.my_date.$valid] }}
             </div>
 
             <!------
@@ -73,8 +73,9 @@
             <!------
                 Creating our own directive.
                 This is the best(!) way to interact with HTML elements.
-                                       ------>
+                                                                      ------>
             <div>
+                First of month:
                 <first-of-month my-attr="my_date"></first-of-month>
             </div>
 
@@ -91,7 +92,7 @@
     (function () {
         var app = angular.module("eg1", []);
 
-        app.controller("page.ctrl", ["$scope",
+        app.controller("PageCtrl", ["$scope",
             function ($scope) {
                 /**
                  * Set up object to handle page routing.
