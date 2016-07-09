@@ -1,0 +1,122 @@
+<!doctype html>
+<html xmlns:ng="http://angularjs.org"
+      lang="en"
+      id="ng-app"
+      ng-app="eg2">
+<head>
+    <meta http-equiv="X-UA-Compatible"
+          content="IE=edge"/>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=utf-8"/>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1"/>
+
+    <title>angular-example-2</title>
+
+    <style>
+        .ball-cage {
+            position: relative;
+        }
+
+        .ball {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 5px;
+            border-radius: 5px;
+            background-color: red;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container"
+     ng-controller="page.ctrl as my_page">
+
+    <div>
+        <button ng-click="my_page.populate()">Populate Data</button>
+
+        <span>&raquo;</span>
+
+        <button ng-click="my_page.draw()"
+                ng-disabled="my_page.can_draw !== true">Send Draw Command
+        </button>
+    </div>
+
+    <div class="ball-cage">
+
+        <div ng-repeat="ball in my_page.balls track by $index">
+
+            <div class="ball"
+                 my-ball="ball"></div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!------
+    Library
+           ------>
+<script src="angular.min.js"></script>
+<script>
+    (function () {
+        var app = angular.module("eg2", []);
+
+        app.controller("page.ctrl", ["$rootScope",
+            function ($rootScope) {
+                var LEFTMAX = 400;
+                var TOPMAX = 400;
+
+                /**
+                 * Expose functionality.
+                 */
+                this.populate = populate;
+                this.draw = draw;
+
+                // -- Functions -- //
+
+                function populate() {
+                    this.balls = [];
+
+                    for (var i = 0, ii = 50; i < ii; i++) {
+                        this.balls.push({
+                            "top": Math.floor(Math.random() * LEFTMAX),
+                            "left": Math.floor(Math.random() * TOPMAX)
+                        });
+                    }
+
+                    this.can_draw = true;
+                }
+
+                function draw() {
+                    $rootScope.$broadcast("BeginDrawing");
+                }
+            }]);
+
+        app.directive("myBall", ["$parse",
+            function ($parse) {
+                return {
+                    "link": link,
+                    "restrict": "A" // A, E, Class, Comment
+                };
+
+                function link(scope, element, attrs) {
+
+                    scope.$on("BeginDrawing", function () {
+                        var ball_data = $parse(attrs["myBall"])(scope);
+
+                        element.css({
+                            "top": ball_data.top + "px",
+                            "left": ball_data.left + "px"
+                        });
+                    });
+
+                }
+            }]);
+    })();
+</script>
+</body>
+</html>

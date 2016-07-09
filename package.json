@@ -1,0 +1,7 @@
+{
+  "name": "angular-examples",
+  "dependencies": {},
+  "devDependencies": {
+    "angular": "^1.5.7"
+  }
+}

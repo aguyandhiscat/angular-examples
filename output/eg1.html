@@ -1,0 +1,154 @@
+<!doctype html>
+<html xmlns:ng="http://angularjs.org"
+      lang="en"
+      id="ng-app"
+      ng-app="eg1">
+<head>
+    <meta http-equiv="X-UA-Compatible"
+          content="IE=edge"/>
+    <meta http-equiv="Content-Type"
+          content="text/html; charset=utf-8"/>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1"/>
+
+    <title>angular-example-1</title>
+</head>
+<body>
+
+<!------
+    Begin Application
+                  ------>
+<div class="container"
+     ng-controller="page.ctrl">
+    
+    <!------
+        Navigation
+               ------>
+    <nav>
+        <ul>
+            <li><a ng-click="page = Pages.home">Home</a></li>
+            <li><a ng-click="goto_page(Pages.date)">Date</a></li>
+        </ul>
+    </nav>
+
+    <p>Current Page: {{page}}</p>
+
+    <!------
+        This is our home page
+                          ------>
+    <div class="home-page"
+         ng-if="page === Pages.home">
+
+        <p>This is the Home-page</p>
+        <p>Angular expressions can evaluate normal javascript: <span>{{</span>1 + 3<span>}}</span> = {{1 + 3}}</p>
+
+    </div>
+
+    <!------
+        This is our date page
+                          ------>
+    <div class="date-page"
+         ng-if="page === Pages.date">
+
+        <form name="my_form">
+
+            <div>
+                <input name="my_date"
+                       type="date"
+                       ng-model="my_date"
+                       ng-required="true"/>
+            </div>
+
+            <div>
+                Valid: {{ { false: "f", true: "t"}[my_form.my_date.$valid] }}
+            </div>
+
+            <!------
+                Working with ng-bind
+                                 ------>
+            <div>
+                Alt Valid: <span ng-bind="{false: 'f', true: 't'}[my_form.my_date.$valid]"></span>
+            </div>
+
+            <!------
+                Creating our own directive.
+                This is the best(!) way to interact with HTML elements.
+                                       ------>
+            <div>
+                <first-of-month my-attr="my_date"></first-of-month>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+<!------
+    Library
+           ------>
+<script src="angular.min.js"></script>
+<script>
+    (function () {
+        var app = angular.module("eg1", []);
+
+        app.controller("page.ctrl", ["$scope",
+            function ($scope) {
+                /**
+                 * Set up object to handle page routing.
+                 */
+                var Pages = {
+                    "home": "home",
+                    "date": "date"
+                };
+                $scope.Pages = Pages;
+
+                /**
+                 * This is our current page.
+                 */
+                $scope.page = Pages.home;
+
+                /**
+                 * Expose our functions.
+                 */
+                $scope.goto_page = goto_page;
+
+                // -- Functions --//
+
+                /**
+                 * Modify current page.
+                 */
+                function goto_page(page) {
+                    $scope.page = page;
+                }
+            }]);
+
+        app.directive("firstOfMonth", ["dateFilter",
+            function (dateFilter) {
+                return {
+                    "link": link,
+                    "restrict": "E", // A, E, Class, Comment
+
+                    /**
+                     * Set up a 2-way binding for the value assigned to
+                     * my-attr attribute.
+                     */
+                    "scope": {
+                        "myAttr": "="
+                    }
+                };
+
+                function link(scope, element, attrs) {
+                    /**
+                     * Watch $scope.myAttr for variable changes.
+                     */
+                    scope.$watch("myAttr", function (new_value, old_value) {
+                        var out = dateFilter(new_value, "yyyy-MM-01");
+
+                        element.html(out);
+                    });
+                }
+            }]);
+    })();
+</script>
+</body>
+</html>
